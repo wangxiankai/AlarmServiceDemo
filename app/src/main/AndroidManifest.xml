@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.wxk.timeserverdemo">
+
+    <!--  网络状态权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--  连网权限 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 允许程序向外部存储设备写数据 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 允许程序向外部存储设备读数据 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!--  照相机功能  -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!--  蓝牙权限  -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- 用于提高GPS定位速度 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+
+    <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <!--震动权限-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!--解锁权限-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
+    <!--设备重启权限-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--忽略电量优化-->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!--接收开机广播-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--前置服务-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--闹钟服务-->
+        <service
+            android:name=".server.AlarmService"
+            android:exported="false"
+            android:process=":alarm_service">
+            <intent-filter android:priority="1000">
+                <action android:name="com.wxk.timeserverdemo.alarm_service" />
+            </intent-filter>
+        </service>
+
+        <!--远程服务-->
+        <service
+            android:name=".server.RemoteService"
+            android:exported="false"
+            android:process=":remote_service">
+            <intent-filter android:priority="1000">
+                <action android:name="com.wxk.timeserverdemo.remote_service" />
+            </intent-filter>
+        </service>
+
+        <!--闹钟提醒服务-->
+        <service
+            android:name=".server.WordService"
+            android:process=":word_service">
+            <intent-filter >
+                <action android:name="com.wxk.timeserverdemo.word_service" />
+            </intent-filter>
+        </service>
+
+        <!--Android 5.0 JobScheduler-->
+        <service
+            android:name=".server.JobSchedulerService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <!--系统广播监听-->
+        <receiver
+            android:name=".receiver.SystemBroadcastReceiver"
+            android:process=":alarm_service" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- 跨进程sp提供者       -->
+        <provider
+            android:authorities="com.wxk.timeserverdemo"
+            android:name=".sp.SharedPreferenceProvider"
+            android:process=":remote"
+            android:exported="false"/>
+
+    </application>
+
+</manifest>
